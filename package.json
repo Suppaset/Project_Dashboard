@@ -44,7 +44,5 @@
     "jest": "^27.5.1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "author": ""
 }
