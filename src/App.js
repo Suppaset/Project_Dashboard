@@ -307,8 +307,8 @@ function Overview({ data }) {
   const totalForecast = forecast?.total;
   const diffTotal = diff?.total;
   const prevYear = years.length >= 2 ? years[years.length - 2] : null;
-  const prevTotal = prevYear ? yearly[prevYear]?.total : null;
-  const growthVsLY = prevTotal && totalActual != null ? ((totalActual - prevTotal) / prevTotal * 100) : null;
+  const prevYTD = prevYear ? sum(yearly[prevYear]?.months.slice(0, actLen) || []) : null;
+  const growthVsLY = prevYTD && totalActual != null ? ((totalActual - prevYTD) / prevYTD * 100) : null;
 
   const monthlyData = MONTHS.map((m, i) => ({
     month: m,
@@ -332,7 +332,7 @@ function Overview({ data }) {
       {forecast && <KPI label="Forecast" value={fmt(totalForecast)} color={C.acc} />}
       {diff && <KPI label="Diff (Act−Fore)" value={fmt(diffTotal)} sub={diffTotal!=null?pct(diffTotal/(totalForecast||1)*100):undefined} color={(diffTotal||0)>=0?C.pos:C.neg} />}
       {achievement!=null && <KPI label="Achievement" value={fmtDec(achievement)+"%"} color={achievement>=100?C.pos:C.neg} />}
-      {growthVsLY!=null && <KPI label={`vs ${prevYear?.slice(1)||"LY"}`} value={pct(growthVsLY)} color={growthVsLY>=0?C.pos:C.neg} />}
+      {growthVsLY!=null && <KPI label={`vs ${prevYear?.slice(1)||"LY"} (YTD ${actLen}mo)`} value={pct(growthVsLY)} color={growthVsLY>=0?C.pos:C.neg} />}
     </div>
     <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr", gap:11, marginBottom:11 }}>
       <Card title={`📊 Actual vs Forecast — Monthly ${ly?.slice(1)||""}`}>
