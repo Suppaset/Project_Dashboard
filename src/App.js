@@ -91,8 +91,8 @@ function parseExcel(ab) {
     const row = dc[i]; if (!row) continue;
     const dateVal = row[0];
     if (!(dateVal instanceof Date)) continue;
-    const yr = dateVal.getUTCFullYear();
-    const mo = dateVal.getUTCMonth();
+    const yr = dateVal.getFullYear();
+    const mo = dateVal.getMonth();
     const entry = { year: yr, monthIdx: mo, month: MONTHS[mo] };
     dcNames.forEach(d => { entry[d.name] = readAny(row[d.col]); });
     if (dcTotalCol >= 0) entry.Total = readVal(row[dcTotalCol]);
