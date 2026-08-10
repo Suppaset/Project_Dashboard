@@ -25,7 +25,7 @@ const readAny = v => (v != null && v !== "" && v !== "-") ? v : null;
    EXCEL PARSER — strict per-sheet extraction
    ═══════════════════════════════════════════ */
 function parseExcel(ab) {
-  const wb = XLSX.read(ab, { type: "array", cellDates: true });
+  const wb = XLSX.read(ab, { type: "array" });
   const missing = ["Overview","DC","Compare"].filter(s => !wb.SheetNames.includes(s));
   if (missing.length) return { error: "Missing sheet(s): " + missing.join(", ") };
 
@@ -90,9 +90,13 @@ function parseExcel(ab) {
   for (let i = dcHdr + 1; i < dc.length; i++) {
     const row = dc[i]; if (!row) continue;
     const dateVal = row[0];
-    if (!(dateVal instanceof Date)) continue;
-    const yr = dateVal.getFullYear();
-    const mo = dateVal.getMonth();
+    if (dateVal == null || typeof dateVal !== "number") continue;
+    // Convert Excel serial number to year/month using SheetJS
+    const parsed = XLSX.SSF.parse_date_code(dateVal);
+    if (!parsed || !parsed.y) continue;
+    const yr = parsed.y;
+    const mo = parsed.m - 1; // parse_date_code returns 1-based month
+    if (mo < 0 || mo > 11) continue;
     const entry = { year: yr, monthIdx: mo, month: MONTHS[mo] };
     dcNames.forEach(d => { entry[d.name] = readAny(row[d.col]); });
     if (dcTotalCol >= 0) entry.Total = readVal(row[dcTotalCol]);
